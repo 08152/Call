@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Walk – Edge Fix</title>
+  <title>Three.js Player – Same Folder Load</title>
   <style>
     body { margin: 0; overflow: hidden; background: #87CEEB; }
     #ui {
@@ -24,8 +24,10 @@
 <script type="module">
   import * as THREE from "https://esm.run/three@0.160.0";
   import { PointerLockControls } from "https://esm.run/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
+  import { GLTFLoader } from "https://esm.run/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
 
   let camera, scene, renderer, controls;
+  let player;
   let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
   let velocity = new THREE.Vector3();
   let prevTime = performance.now();
@@ -43,24 +45,21 @@
   document.body.appendChild(renderer.domElement);
 
   // Licht
-  const light = new THREE.DirectionalLight(0xffffff, 3);
-  light.position.set(100, 200, 100);
-  scene.add(light);
-
-  const ambient = new THREE.AmbientLight(0xffffff, 1.5);
-  scene.add(ambient);
+  scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+  const sun = new THREE.DirectionalLight(0xffffff, 3);
+  sun.position.set(100, 200, 100);
+  scene.add(sun);
 
   // Boden
-  const plane = new THREE.Mesh(
+  const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(500, 500),
     new THREE.MeshLambertMaterial({ color: 0x33cc33 })
   );
-  plane.rotation.x = -Math.PI / 2;
-  scene.add(plane);
+  ground.rotation.x = -Math.PI / 2;
+  scene.add(ground);
 
   // Pointer Lock Controls
   controls = new PointerLockControls(camera, document.body);
-
   document.getElementById("start").onclick = () => controls.lock();
 
   controls.addEventListener("lock", () => {
@@ -68,6 +67,15 @@
   });
   controls.addEventListener("unlock", () => {
     document.getElementById("ui").style.display = "block";
+  });
+
+  // GLB Loader – AUTOMATISCH aus dem gleichen Ordner
+  const loader = new GLTFLoader();
+  loader.load("./player.glb", (gltf) => {
+    player = gltf.scene;
+    player.position.set(0, 0, 0);
+    player.scale.set(1, 1, 1);
+    scene.add(player);
   });
 
   // Tastatur
@@ -107,6 +115,11 @@
       controls.moveForward(velocity.z * delta);
 
       controls.getObject().position.y = 3;
+
+      // Player folgt der Kamera
+      if (player) {
+        player.position.copy(controls.getObject().position);
+      }
     }
 
     prevTime = time;
