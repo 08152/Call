@@ -2,9 +2,9 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Walk – Three.js</title>
+  <title>3D Walk – Sichtbare Version</title>
   <style>
-    body { margin: 0; overflow: hidden; background: #000; }
+    body { margin: 0; overflow: hidden; background: #222; }
     #ui {
       position: absolute; top: 10px; left: 10px;
       color: white; background: rgba(0,0,0,0.5);
@@ -17,7 +17,7 @@
 <div id="ui">
   <b>WASD</b> = laufen<br>
   <b>Maus</b> = schauen<br><br>
-  <button id="start">Start (Maus freigeben)</button>
+  <button id="start">Start</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
@@ -31,32 +31,35 @@
 
   // Szene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x202020);
+  scene.background = new THREE.Color(0x444444); // heller Hintergrund
 
   // Kamera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 2, 0);
+  camera.position.set(0, 3, 0);
 
   // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // Licht
-  const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
-  scene.add(light);
+  // Licht – sehr stark
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 2.5);
+  scene.add(hemi);
 
-  // Boden
+  const dir = new THREE.DirectionalLight(0xffffff, 2.0);
+  dir.position.set(50, 100, -50);
+  scene.add(dir);
+
+  // Boden – Lambert = immer sichtbar
   const plane = new THREE.Mesh(
     new THREE.PlaneGeometry(500, 500),
-    new THREE.MeshStandardMaterial({ color: 0x228822 })
+    new THREE.MeshLambertMaterial({ color: 0x22aa22 })
   );
   plane.rotation.x = -Math.PI / 2;
   scene.add(plane);
 
   // Pointer Lock
   controls = new THREE.PointerLockControls(camera, document.body);
-
   document.getElementById("start").onclick = () => controls.lock();
 
   controls.addEventListener("lock", () => {
@@ -102,7 +105,7 @@
       controls.moveRight(velocity.x * delta);
       controls.moveForward(velocity.z * delta);
 
-      controls.getObject().position.y = 2;
+      controls.getObject().position.y = 3;
     }
 
     prevTime = time;
