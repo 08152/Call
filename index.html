@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js 3D Walk – ES Modules</title>
+  <title>Three.js 3D Walk – Fix Version</title>
   <style>
     body { margin: 0; overflow: hidden; background: #87CEEB; }
     #ui {
@@ -22,8 +22,8 @@
 </div>
 
 <script type="module">
-  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-  import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
+  import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+  import { PointerLockControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
 
   let camera, scene, renderer, controls;
   let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
@@ -58,7 +58,7 @@
   plane.rotation.x = -Math.PI / 2;
   scene.add(plane);
 
-  // Pointer Lock Controls (MODERN!)
+  // Pointer Lock Controls
   controls = new PointerLockControls(camera, document.body);
 
   document.getElementById("start").onclick = () => controls.lock();
